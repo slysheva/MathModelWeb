@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="/static/style.css"/>
+
+{% load static %}
+<h1>MathModel</h1>
+<div class="modelDescription">
+        <p>
+            Модель, описывающая процессы затвердевания с&nbsp;двухфазной зоной концентрационного переохлаждения
+        </p>
+        <p class="hint">
+            <em>Параметры по умолчанию — сплав TiAl</em>
+        </p>
+</div>
+<form action="{% url 'webservice:answer' %}" method="post">
+    {% csrf_token %}
+    <ul class="parameters">
+    {% for field in form %}
+        <li class="param">
+            {{ field.label_tag }}
+            {{ field }}
+        </li>
+    {% endfor %}
+    </ul>
+<input type="submit" id="SubmitButton" class="runButton" value="solve" />
+</form>

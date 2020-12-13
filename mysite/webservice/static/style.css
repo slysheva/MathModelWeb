@@ -1,0 +1,47 @@
+body {
+    font-size: 18px;
+    padding: 0 40px;
+    font-family: Segoe UI, Helvetica Neue, Arial, Tahoma, sans-serif;
+}
+
+main {
+    margin-bottom: 24px;
+    max-width: 800px;
+}
+
+ul {
+    padding-left: 0;
+}
+
+ul li {
+    display: block;
+}
+
+li + li {
+    padding-top: 8px;
+}
+
+.parameters {
+    width: 250px;
+}
+
+.param {
+    display: flex;
+    justify-content: space-between;
+}
+
+.runButton {
+    font-size: 16px;
+    height: 29px;
+}
+
+.modelDescription {
+    width: 440px;
+    margin-bottom: 30px;
+}
+
+.hint {
+    border-left: #00000070 solid;
+    padding-left: 10px;
+    font-size: 16px;
+}

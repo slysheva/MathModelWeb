@@ -1,0 +1,21 @@
+<link rel="stylesheet" href="/static/style.css"/>
+
+{% load static %}
+{% block navigation %}<a href="/webservice/run_model">←&nbsp;Ввести другие параметры</a>{% endblock %}
+{% block title %}Результат{% endblock %}
+{% block content %}
+    <ul>
+        {% for plotModel in plots %}
+            <li>
+                <figure>
+                    <img src="{{ plotModel.src }}"
+                         alt="{{ plotModel.alt }}"/>
+                    <figcaption> {{ plotModel.description|safe}} </figcaption>
+                    <a href="{{ plotModel.data_url }}" target="_blank">Скачать данные</a>
+                </figure>
+            </li>
+        {% endfor %}
+
+    </ul>
+
+{% endblock %}
