@@ -2,6 +2,9 @@ import csv
 import json
 import subprocess
 
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import render
 
 import matplotlib.pyplot as plt
@@ -9,85 +12,42 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 from .constants import ARGS, ARGS_FORM, ARGS_FNAME, INITIAL_VALUES, URL_PREFIX, plots
-from .models import PlotModel, ArgModel, CameraPosition
+from .models import PlotModel, ArgModel, CameraPosition, TaskResult
 from .task_forms.task_form import TaskForm
 from subprocess import check_output
+from datetime import datetime
 
 
-
-# class IndexView(generic.ListView):
-#     template_name = 'webservice/index.html'
-#     context_object_name = 'latest_question_list'
-#
-#     def get_queryset(self):
-#         """
-#         Return the last five published questions (not including those set to be
-#         published in the future).
-#         """
-#         return Question.objects.filter(
-#             pub_date__lte=timezone.now()
-#         ).order_by('-pub_date')[:5]
-#
-#
-# class DetailView(generic.DetailView):
-#     model = Question
-#     template_name = 'webservice/detail.html'
-#
-#     def get_queryset(self):
-#         """
-#         Excludes any questions that aren't published yet.
-#         """
-#         return Question.objects.filter(pub_date__lte=timezone.now())
-#
-#
-# def vote(request, question_id):
-#     question = get_object_or_404(Question, pk=question_id)
-#     try:
-#         selected_choice = question.choice_set.get(pk=request.POST['choice'])
-#     except (KeyError, Choice.DoesNotExist):
-#         # Redisplay the question voting form.
-#         return render(request, 'webservice/detail.html', {
-#             'question': question,
-#             'error_message': "You didn't select a choice.",
-#         })
-#     else:
-#         selected_choice.votes += 1
-#         selected_choice.save()
-#         # Always return an HttpResponseRedirect after successfully dealing
-#         # with POST data. This prevents data from being posted twice if a
-#         # user hits the Back button.
-#         return HttpResponseRedirect(reverse('webservice:results',
-#                                             args=(question.id,)))
-
-
-def list_tasks(request):
-    tasks = ["firstTask"]
-    return render(request, 'webservice/tasks.html', {"tasks": tasks})
-
+def main_page(request):
+    return render(request, 'webservice/main_page.html', {'section': 'main'})
 
 
 def get_result(request):
     input_data = request.POST
 
-    save_args(input_data)
+    task_info = TaskResult()
+    task_info.input_data = save_args(input_data)
 
     run_model()
+
+    output_params = {}
     for plot in plots:
-        draw_plot(plot)
+        x_axis, y_axis, z_axis = get_points(f".{URL_PREFIX + plot.data_url}")
+        output_params[plot.name] = [x_axis, y_axis, z_axis]
+        draw_plot(plot, x_axis, y_axis, z_axis)
 
+    task_info.creation_date = datetime.now()
+    task_info.output_data = json.dumps(output_params)
+    task_info.save()
     return render(request, 'webservice/results.html', {'plots': plots})
-  #  return render(request, 'webservice/answer.html', {"answer": ans})
 
 
-def solve_task(request):
+def model(request):
     if request.method == 'POST':
 
         return get_result(request)
     else:
         form = TaskForm(request.GET, initial=INITIAL_VALUES)
-
-
-
 
     return render(request, 'webservice/task.html', {'form': form})
 
@@ -98,19 +58,20 @@ def run_model():
     #app.logger.info(out)
 
 
-def save_args(form_data):
-    print(form_data)
+def save_args(form_data):  # TODO: using db
     args = {}
     for argName in ARGS:
         value = float(form_data[argName])
         if value:
             args[argName] = value
+    content = json.dumps(args)
     with open(ARGS_FNAME, "w") as file:
-        file.write(json.dumps(args))
+        file.write(content)
+    return content
 
 
-def draw_plot(plot: PlotModel):
-    x_axis, y_axis, z_axis = get_points(f".{URL_PREFIX + plot.data_url}")
+def draw_plot(plot: PlotModel, x_axis, y_axis, z_axis):
+    # x_axis, y_axis, z_axis = get_points(f".{URL_PREFIX + plot.data_url}")
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.plot_trisurf(x_axis, y_axis, z_axis, linewidth=0.2, antialiased=True, cmap="autumn", alpha=0.9)
@@ -126,6 +87,3 @@ def get_points(fname):
     z_axis = [p[2] for p in points]
 
     return x_axis, y_axis, z_axis
-
-
-

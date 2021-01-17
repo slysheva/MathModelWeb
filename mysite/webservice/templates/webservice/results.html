@@ -1,9 +1,10 @@
-<link rel="stylesheet" href="/static/style.css"/>
+{% extends "base.html" %}
 
 {% load static %}
-{% block navigation %}<a href="/webservice/run_model">←&nbsp;Ввести другие параметры</a>{% endblock %}
 {% block title %}Результат{% endblock %}
 {% block content %}
+    <a href="/webservice/run_model">←&nbsp;Ввести другие параметры</a>
+    <h1>Результат</h1>
     <ul>
         {% for plotModel in plots %}
             <li>

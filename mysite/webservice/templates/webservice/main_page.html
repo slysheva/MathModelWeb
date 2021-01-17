@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Запустить модель{% endblock %}
+{% block content %}
+<h1>Задачи</h1>
+<ul>
+    <li>
+        <div class="modelDescription">
+                    <p>
+                        Модель, описывающая процессы затвердевания с&nbsp;двухфазной зоной концентрационного переохлаждения
+                    </p>
+            <p><a href="{% url 'webservice:model' %}">Перейти к вычислениям</a></p>
+
+        </div>
+    </li>
+</ul>
+
+{% endblock %}

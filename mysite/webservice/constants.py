@@ -26,13 +26,13 @@ ARGS = [arg.json_name for arg in ARGS_FORM.values()]
 URL_PREFIX = '/webservice'
 
 plots = [
-    PlotModel('/static/phi_interpolated.png', 'Доля твёрдой фазы на границе кристалл-двухфазная зона',
+    PlotModel('phi', '/static/phi_interpolated.png', 'Доля твёрдой фазы на границе кристалл-двухфазная зона',
               'Доля твёрдой фазы на&nbsp;границе кристалл-двухфазная зона в&nbsp;зависимости от&nbsp;градиента температуры в&nbsp;твёрдой фазе g<sub>s</sub> и&nbsp;коэффициента отклонения уравнения ликвидуса от&nbsp;линейного вида&nbsp;n',
               '/static/phi_interpolated.csv', CameraPosition(25, 45)),
-    PlotModel('/static/epsilon.png', 'Безразмерная протяжённость двухфазной зоны',
+    PlotModel('epsilon', '/static/epsilon.png', 'Безразмерная протяжённость двухфазной зоны',
               'Безразмерная протяжённость двухфазной зоны',
               '/static/epsilon.csv', CameraPosition(20, 40)),
-    PlotModel('/static/delta.png', 'Протяженность области фазового перехода',
+    PlotModel('delta', '/static/delta.png', 'Протяженность области фазового перехода',
               'Протяженность области фазового перехода в&nbsp;зависимости от&nbsp;градиента температуры в&nbsp;твердой фазе',
               '/static/delta.csv', CameraPosition(30, 40))
 ]

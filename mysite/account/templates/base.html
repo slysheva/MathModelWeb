@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link href="/static/base.css" rel="stylesheet">
+</head>
+<body>
+<div id="header">
+    <span class="logo">MathModelWeb</span>
+     <ul class="menu">
+         {% if section == "dashboard" %}
+            <li class="selected">
+         {% else %}
+            <li>
+         {% endif %}
+         <a href="{% url 'dashboard' %}">Мой кабинет</a>
+         </li>
+         {% if section == "main" %}
+            <li class="selected">
+         {% else %}
+            <li>
+         {% endif %}
+        <a href="{% url 'webservice:main' %}">Главная</a>
+         </li>
+        </ul>
+     <span class="user">
+        {% if request.user.is_authenticated %}
+            Добрый день, {{ request.user.first_name  }}!
+            <a href="{% url 'logout' %}"> Выйти</a>
+        {% else %}
+            <a href="{% url 'login' %}"> Войти</a>
+        {% endif %}
+    </span>
+</div>
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+</html>
