@@ -3,29 +3,32 @@
 <head>
     <title>{% block title %}{% endblock %}</title>
     <link href="/static/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <div id="header">
-    <span class="logo">MathModelWeb</span>
+    <span class="logo">WebMathModel</span>
      <ul class="menu">
-         {% if section == "dashboard" %}
-            <li class="selected">
-         {% else %}
-            <li>
-         {% endif %}
-         <a href="{% url 'dashboard' %}">Мой кабинет</a>
-         </li>
          {% if section == "main" %}
             <li class="selected">
          {% else %}
             <li>
          {% endif %}
-        <a href="{% url 'webservice:main' %}">Главная</a>
+         <a href="{% url 'webservice:main' %}">Главная</a>
          </li>
-        </ul>
+         {% if request.user.is_authenticated %}
+             {% if section == "journal" %}
+                <li class="selected">
+             {% else %}
+                <li>
+             {% endif %}
+             <a href="{% url 'webservice:journal' %}">Журнал</a>
+             </li>
+         {% endif %}
+     </ul>
      <span class="user">
         {% if request.user.is_authenticated %}
-            Добрый день, {{ request.user.first_name  }}!
+            Добрый день, {{ request.user.first_name }}!
             <a href="{% url 'logout' %}"> Выйти</a>
         {% else %}
             <a href="{% url 'login' %}"> Войти</a>

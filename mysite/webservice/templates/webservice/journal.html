@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load render_table from django_tables2 %}
+{% load static %}
+{% block title %}Журнал{% endblock %}
+{% block content %}
+    <h1>Журнал моделирования</h1>
+    <!--<ul>-->
+        <!--{% for task in tasks %}-->
+            <!--<li>-->
+               <!--{{ task.id }}-->
+                <!--{{ task.creation_date}}-->
+            <!--</li>-->
+        <!--{% endfor %}-->
+
+    <!--</ul>-->
+    {% render_table table %}
+
+{% endblock %}

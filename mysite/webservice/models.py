@@ -1,33 +1,20 @@
 import datetime
+import uuid
 
 from django.utils import timezone
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class TaskResult(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     input_data = models.TextField()
     output_data = models.TextField()
     creation_date = models.DateTimeField()
+    model_title = models.CharField(max_length=100)
+    created_by_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    #url = models.TextField()
 
-    # def __str__(self):
-    #     return self.question_text
-
-    # def was_published_recently(self):
-    #     now = timezone.now()
-    #     return now - datetime.timedelta(days=1) <= self.pub_date <= now
-
-    # was_published_recently.admin_order_field = 'pub_date'
-    # was_published_recently.boolean = True
-    # was_published_recently.short_description = 'Published recently?'
-#
-#
-# class Choice(models.Model):
-#     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-#     choice_text = models.CharField(max_length=200)
-#     votes = models.IntegerField(default=0)
-#
-#     def __str__(self):
-#         return self.choice_text
 
 class CameraPosition:
     def __init__(self, elevation, position):

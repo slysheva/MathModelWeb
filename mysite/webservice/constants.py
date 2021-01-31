@@ -25,7 +25,7 @@ ARGS = [arg.json_name for arg in ARGS_FORM.values()]
 
 URL_PREFIX = '/webservice'
 
-plots = [
+PLOTS = [
     PlotModel('phi', '/static/phi_interpolated.png', 'Доля твёрдой фазы на границе кристалл-двухфазная зона',
               'Доля твёрдой фазы на&nbsp;границе кристалл-двухфазная зона в&nbsp;зависимости от&nbsp;градиента температуры в&nbsp;твёрдой фазе g<sub>s</sub> и&nbsp;коэффициента отклонения уравнения ликвидуса от&nbsp;линейного вида&nbsp;n',
               '/static/phi_interpolated.csv', CameraPosition(25, 45)),
@@ -52,3 +52,5 @@ INITIAL_VALUES = {
     "nMin": -2,
     "nMax": 2
 }
+
+HOST = "127.0.0.1:8000"
