@@ -3,7 +3,15 @@
 {% load static %}
 {% block title %}Результат{% endblock %}
 {% block content %}
-    <a href="/webservice/run_model">←&nbsp;Ввести другие параметры</a>
+    <a href="{% url 'webservice:model' %}?{{ query_string }}">←&nbsp;Ввести другие параметры</a>
+    <h1>Входные параметры</h1>
+    <ul>
+        {% for param in params %}
+            <li>
+                {{ param.displayed_name }} = {{ param.value }}
+            </li>
+        {% endfor %}
+    </ul>
     <h1>Результат</h1>
     <ul>
         {% for plotModel in plots %}
@@ -12,7 +20,7 @@
                     <img src="{{ plotModel.src }}"
                          alt="{{ plotModel.alt }}"/>
                     <figcaption> {{ plotModel.description|safe}} </figcaption>
-                    <a href="{{ plotModel.data_url }}" target="_blank">Скачать данные</a>
+                    <a href="{{ plotModel.data_url }}" target="_blank">Скачать данные в формате csv</a>
                 </figure>
             </li>
         {% endfor %}

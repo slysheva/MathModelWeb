@@ -5,7 +5,7 @@ from ..constants import ARGS_FORM, INITIAL_VALUES
 
 
 class TaskForm(forms.Form):
-    ks = forms.FloatField(label=mark_safe(ARGS_FORM["ks"].displayed_name), initial=INITIAL_VALUES["ks"])
+    ks = forms.FloatField(label=mark_safe(ARGS_FORM["ks"].displayed_name))
     kl = forms.FloatField(label=mark_safe(ARGS_FORM["kl"].displayed_name))
     k = forms.FloatField(label=mark_safe(ARGS_FORM["k"].displayed_name))
     gl = forms.FloatField(label=mark_safe(ARGS_FORM["gl"].displayed_name))
@@ -18,4 +18,3 @@ class TaskForm(forms.Form):
     gsMax = forms.FloatField(label=mark_safe(ARGS_FORM["gsMax"].displayed_name))
     nMin = forms.FloatField(label=mark_safe(ARGS_FORM["nMin"].displayed_name))
     nMax = forms.FloatField(label=mark_safe(ARGS_FORM["nMax"].displayed_name))
-

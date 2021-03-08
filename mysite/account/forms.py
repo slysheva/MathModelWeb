@@ -3,12 +3,15 @@ import django.forms as forms
 
 
 class UserRegistrationForm(forms.ModelForm):
-    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Повторите пароль', widget=forms.PasswordInput)
-
     class Meta:
         model = User
         fields = ('username', 'first_name', 'email')
+
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Повторите пароль', widget=forms.PasswordInput)
+    username = forms.CharField(label='Имя пользователя')
+    first_name = forms.CharField(label='Ваше имя')
+    email = forms.EmailField(label='Адрес электронной почты')
 
     def clean_password2(self):
         cd = self.cleaned_data

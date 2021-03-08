@@ -7,9 +7,11 @@
             <p>
                 Модель, описывающая процессы затвердевания с&nbsp;двухфазной зоной концентрационного переохлаждения
             </p>
-            <p class="hint">
-                <em>Параметры по умолчанию — сплав TiAl</em>
-            </p>
+            {% if show_hint %}
+                <p class="hint">
+                    <em>Параметры по умолчанию — сплав TiAl</em>
+                </p>
+            {% endif %}
     </div>
     <form action="{% url 'webservice:answer' %}" method="post">
         {% csrf_token %}
@@ -21,7 +23,7 @@
             </li>
         {% endfor %}
         </ul>
-        <p><input type="submit" value="solve"></p>
+        <p><input type="submit" value="Запустить"></p>
     </form>
 {% endblock %}
 

@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
 import matplotlib.pyplot as plt
+from django.utils.safestring import mark_safe
 from django_tables2 import RequestConfig
 
 from mpl_toolkits.mplot3d import Axes3D
@@ -24,6 +25,7 @@ def main_page(request):
     return render(request, 'webservice/main_page.html', {'section': 'main'})
 
 
+@login_required
 def get_result(request):
     input_data = request.POST
 
@@ -57,21 +59,28 @@ def get_journal(request):
 
 def show_result(request, task_info_id):
     task_info = get_object_or_404(TaskResult, id=task_info_id)
+    input_data = json.loads(task_info.input_data)
     result_data = json.loads(task_info.output_data)
     for plot in PLOTS:
         x_axis, y_axis, z_axis = result_data[plot.name]
         draw_plot(plot, x_axis, y_axis, z_axis)
-    return render(request, 'webservice/results.html', {'plots': PLOTS})
+    params = [ArgModel(arg, input_data[arg], mark_safe(ARGS_FORM[arg].displayed_name)) for arg in input_data.keys()]
+    query_string = '&'.join([p.json_name + '=' + str(p.value) for p in params])
+    return render(request, 'webservice/results.html', {'plots': PLOTS, 'params': params, 'query_string': query_string})
 
 
 def model(request):
     if request.method == 'POST':
-
         return get_result(request)
     else:
-        form = TaskForm(request.GET, initial=INITIAL_VALUES)
+        show_hint = False
+        if request.GET & TaskForm.base_fields.keys():
+            form = TaskForm(request.GET)
+        else:
+            form = TaskForm(initial=INITIAL_VALUES)
+            show_hint = True
 
-    return render(request, 'webservice/task.html', {'form': form})
+    return render(request, 'webservice/task.html', {'form': form, 'show_hint': show_hint})
 
 
 def run_model():

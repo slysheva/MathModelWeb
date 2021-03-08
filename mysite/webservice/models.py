@@ -36,4 +36,4 @@ class ArgModel:
     def __init__(self, json_name, default, displayed_name=None):
         self.json_name = json_name
         self.displayed_name = displayed_name if displayed_name else json_name
-        self.default = default
+        self.value = default
