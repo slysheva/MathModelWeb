@@ -3,7 +3,28 @@
 {% load static %}
 {% block title %}Результат{% endblock %}
 {% block content %}
-    <a href="{% url 'webservice:model' %}?{{ query_string }}">←&nbsp;Ввести другие параметры</a>
+    <a href="{% url 'webservice:model' model_id=model_id %}?{{ query_string }}">←&nbsp;Ввести другие параметры</a>
+    {% if edit_mode %}
+        <a class="menuButton"
+           href="{% url 'webservice:delete_record'  record_id=record_id %}"
+           onclick="return confirm('Вы действительно хотите удалить запись из журнала?')">
+            Удалить запись
+        </a>
+        {% if access_opened %}
+            <a class="menuButton"
+               href="{% url 'webservice:close_view_access'  record_id=record_id %}"
+               onclick="return confirm('Вы действительно хотите закрыть доступ по ссылке к этой странице?')">
+                Закрыть доступ по ссылке
+            </a>
+        {% else %}
+            <a class="menuButton"
+               href="{% url 'webservice:open_view_access'  record_id=record_id %}"
+               onclick="return confirm('Вы действительно хотите открыть доступ по ссылке к этой странице?')">
+                Открыть доступ по ссылке
+            </a>
+        {% endif %}
+
+    {% endif %}
     <h1>Входные параметры</h1>
     <ul>
         {% for param in params %}
@@ -20,7 +41,8 @@
                     <img src="{{ plotModel.src }}"
                          alt="{{ plotModel.alt }}"/>
                     <figcaption> {{ plotModel.description|safe}} </figcaption>
-                    <a href="{{ plotModel.data_url }}" target="_blank">Скачать данные в формате csv</a>
+                    <br/>
+                    <a class="button" href="{{ plotModel.data_url }}" target="_blank">Скачать данные в формате csv</a>
                 </figure>
             </li>
         {% endfor %}

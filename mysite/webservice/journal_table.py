@@ -25,5 +25,10 @@ class JournalTable(tables.Table):
 
     def render_id(self, value, record):
         search_url = "http://{}/webservice/show_result/{}/".format(HOST, record.id)
-        return (format_html('<a href="{}" data-toggle="tooltip" title="Просмотр"><i class="fa fa-search"></i></a>', search_url)
-                + format_html('<a href="{}" data-toggle="tooltip" title="Удалить"><i class="fa fa-trash"></i></a>', search_url))
+        delete_url = "http://{}/webservice/delete_record/{}/".format(HOST, record.id)
+        confirm_message = "'Вы действительно хотите удалить запись из журнала?'"
+        raw_open_button = '<a href="{}" data-toggle="tooltip" title="Просмотр"><i class="fa fa-search"></i></a>'
+        raw_delete = '''<a href="{}" data-toggle="tooltip" title="Удалить" onclick="return confirm({});">
+                            <i class="fa fa-trash"></i>
+                        </a>'''
+        return format_html(raw_open_button, search_url) + format_html(raw_delete, delete_url, confirm_message)

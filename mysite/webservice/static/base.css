@@ -141,6 +141,14 @@ input[type=submit], a.button {
     font-size:14px;
     text-transform:uppercase;
 }
+a.menuButton {
+    font-weight:bold;
+    background:#fff;
+    color:#12c064;
+    padding:10px 20px;
+    font-size:14px;
+    text-transform:uppercase;
+}
 .errorlist {
     color:#cc0033;
     float:left;

@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 
-from ..constants import ARGS_FORM, INITIAL_VALUES
+from ..models import ARGS_FORM
 
 
 class TaskForm(forms.Form):

@@ -5,11 +5,11 @@
     <h1>Запустить модель</h1>
     <div class="modelDescription">
             <p>
-                Модель, описывающая процессы затвердевания с&nbsp;двухфазной зоной концентрационного переохлаждения
+                {{ model_description }}
             </p>
             {% if show_hint %}
                 <p class="hint">
-                    <em>Параметры по умолчанию — сплав TiAl</em>
+                    <em>{{ default_description }}</em>
                 </p>
             {% endif %}
     </div>
