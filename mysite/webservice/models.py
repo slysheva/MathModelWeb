@@ -1,9 +1,12 @@
 import datetime
 import uuid
+import subprocess
+import csv
 
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
+from subprocess import check_output
 
 import matplotlib.pyplot as plt
 
@@ -86,38 +89,29 @@ class WolframTask:
         ax.view_init(plot.camera_pos.elevation, plot.camera_pos.azimuth)
         plt.savefig(f".{URL_PREFIX + plot.src}", bbox_inches='tight')
 
+    def get_points(self, fname):
+        with open(fname, 'r') as f:
+            points = [list(map(float, row)) for row in csv.reader(f)]
+        x_axis = [p[0] for p in points]
+        y_axis = [p[1] for p in points]
+        z_axis = [p[2] for p in points]
+
+        return x_axis, y_axis, z_axis
+
     # по выходным файлам вольфрам скрипта посторить результат
     def gen_result(self, result_data):
         for plot in self.plots_list:
             x_axis, y_axis, z_axis = result_data[plot.name]
             self.draw_plot(plot, x_axis, y_axis, z_axis)
 
-PLOTS = [
-    PlotModel('phi', '/static/phi_interpolated.png', 'Доля твёрдой фазы на границе кристалл-двухфазная зона',
-              'Доля твёрдой фазы на&nbsp;границе кристалл-двухфазная зона в&nbsp;зависимости от&nbsp;градиента температуры в&nbsp;твёрдой фазе g<sub>s</sub> и&nbsp;коэффициента отклонения уравнения ликвидуса от&nbsp;линейного вида&nbsp;n',
-              '/static/phi_interpolated.csv', CameraPosition(25, 45)),
-    PlotModel('epsilon', '/static/epsilon.png', 'Безразмерная протяжённость двухфазной зоны',
-              'Безразмерная протяжённость двухфазной зоны',
-              '/static/epsilon.csv', CameraPosition(20, 40)),
-    PlotModel('delta', '/static/delta.png', 'Протяженность области фазового перехода',
-              'Протяженность области фазового перехода в&nbsp;зависимости от&nbsp;градиента температуры в&nbsp;твердой фазе',
-              '/static/delta.csv', CameraPosition(30, 40))
-]
+    def run_model(self):
+        out = check_output("wolframscript -script ./static/program.m", stderr=subprocess.STDOUT,
+                           stdin=subprocess.DEVNULL)
 
-ARGS_FORM = {
-    "ks": ArgModel("ks", 29.22 / METR2CM, "k<sub>s</sub>"),
-    "kl": ArgModel("kl", 29 / METR2CM, "k<sub>l</sub>"),
-    "k": ArgModel("k", 0.8),
-    "gl": ArgModel("gl", 1, "g<sub>l</sub>"),
-    "L": ArgModel("L", 12268.8 / GRAMPERMOL),
-    "rho": ArgModel("rho", 3.46, "ρ"),
-    "Dl": ArgModel("Dl", 8.27 * (10 ** (-9)) * METR2CM * METR2CM, "D<sub>l</sub>"),
-    "sigmaInf": ArgModel("sigmaInf", 0.55, "σ<sub>∞</sub>"),
-    "m": ArgModel("m", -8.8),
-    "gsMin": ArgModel("gsMin", 2, "g<sub>s<sub>min</sub></sub>"),
-    "gsMax": ArgModel("gsMax", 25, "g<sub>s<sub>max</sub></sub>"),
-    "nMin": ArgModel("nMin", -2, "n<sub>min</sub>"),
-    "nMax": ArgModel("nMax", 2, "n<sub>max</sub>"),
-}
+        output_params = {}
 
-ARGS = [arg.json_name for arg in ARGS_FORM.values()]
+        for plot in self.plots_list:
+            x_axis, y_axis, z_axis = self.get_points(f".{URL_PREFIX + plot.data_url}")
+            output_params[plot.name] = [x_axis, y_axis, z_axis]
+
+        return output_params

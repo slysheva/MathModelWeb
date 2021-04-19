@@ -1,24 +1,17 @@
-import csv
 import json
-import subprocess
 
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
-import matplotlib.pyplot as plt
 from django.utils.safestring import mark_safe
 from django_tables2 import RequestConfig
 
-from mpl_toolkits.mplot3d import Axes3D
-
 from .journal_table import JournalTable
-from .constants import ARGS_FNAME, URL_PREFIX
-from .models import PlotModel, ArgModel, CameraPosition, TaskResult, ARGS_FORM, PLOTS, ARGS
+from .constants import ARGS_FNAME
+from .models import ArgModel, TaskResult
 from .task_forms.task_form import TaskForm
 from .wolfram_tasks import wolfram_tasks
-from subprocess import check_output
 from datetime import datetime
 
 
@@ -31,20 +24,16 @@ def get_result(request, model_id):
     input_data = request.POST
 
     task_info = TaskResult()
-    task_info.input_data = save_args(input_data)
+    task_info.input_data = save_args(input_data, model_id)
 
-    run_model()
+    current_model = wolfram_tasks[model_id]
 
-    output_params = {}
-    for plot in PLOTS:
-        x_axis, y_axis, z_axis = get_points(f".{URL_PREFIX + plot.data_url}")
-        output_params[plot.name] = [x_axis, y_axis, z_axis]
+    output_params = current_model.run_model()  # TODO: try catch
 
     task_info.creation_date = datetime.now()
     task_info.output_data = json.dumps(output_params)
     task_info.created_by_user = request.user
-    model = wolfram_tasks[model_id]
-    task_info.model_title = model.tittle
+    task_info.model_title = current_model.tittle
     task_info.model_id = model_id
     task_info.save()
     return redirect('webservice:show_result', task_info_id=task_info.id)
@@ -92,14 +81,14 @@ def show_result(request, task_info_id):
         return HttpResponse("Ошибка. Нет прав на просмотр.")
     input_data = json.loads(task_info.input_data)
     result_data = json.loads(task_info.output_data)
-    for plot in PLOTS:
-        x_axis, y_axis, z_axis = result_data[plot.name]
-        draw_plot(plot, x_axis, y_axis, z_axis)
-    params = [ArgModel(arg, input_data[arg], mark_safe(ARGS_FORM[arg].displayed_name)) for arg in input_data.keys()]
+
+    current_model = wolfram_tasks[task_info.model_id]
+    current_model.gen_result(result_data)
+    params = [ArgModel(arg, input_data[arg], mark_safe(current_model.args_dict[arg].displayed_name)) for arg in input_data.keys()]
     query_string = '&'.join([p.json_name + '=' + str(p.value) for p in params])
     return render(request, 'webservice/results.html',
                   {
-                      'plots': PLOTS,
+                      'plots': current_model.plots_list,
                       'params': params,
                       'query_string': query_string,
                       'record_id': task_info_id,
@@ -135,15 +124,10 @@ def model(request, model_id):
     })
 
 
-def run_model():
-    out = check_output("wolframscript -script ./static/program.m", stderr=subprocess.STDOUT,
-                       stdin=subprocess.DEVNULL)
-    # app.logger.info(out)
-
-
-def save_args(form_data):  # TODO: using db
+def save_args(form_data, model_id):  # TODO: using db
+    current_model = wolfram_tasks[model_id]
     args = {}
-    for argName in ARGS:
+    for argName in current_model.args_dict:
         value = float(form_data[argName])
         if value:
             args[argName] = value
@@ -151,21 +135,3 @@ def save_args(form_data):  # TODO: using db
     with open(ARGS_FNAME, "w") as file:
         file.write(content)
     return content
-
-
-def draw_plot(plot: PlotModel, x_axis, y_axis, z_axis):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_trisurf(x_axis, y_axis, z_axis, linewidth=0.2, antialiased=True, cmap="autumn", alpha=0.9)
-    ax.view_init(plot.camera_pos.elevation, plot.camera_pos.azimuth)
-    plt.savefig(f".{URL_PREFIX + plot.src}", bbox_inches='tight')
-
-
-def get_points(fname):
-    with open(fname, 'r') as f:
-        points = [list(map(float, row)) for row in csv.reader(f)]
-    x_axis = [p[0] for p in points]
-    y_axis = [p[1] for p in points]
-    z_axis = [p[2] for p in points]
-
-    return x_axis, y_axis, z_axis
