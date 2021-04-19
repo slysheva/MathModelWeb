@@ -27,7 +27,7 @@ def main_page(request):
 
 
 @login_required
-def get_result(request):
+def get_result(request, model_id):
     input_data = request.POST
 
     task_info = TaskResult()
@@ -43,8 +43,9 @@ def get_result(request):
     task_info.creation_date = datetime.now()
     task_info.output_data = json.dumps(output_params)
     task_info.created_by_user = request.user
-    task_info.model_title = "Затвердевание с двухфазной зоной концентрационного переохлаждения"
-    task_info.model_id = 'model_processes'
+    model = wolfram_tasks[model_id]
+    task_info.model_title = model.tittle
+    task_info.model_id = model_id
     task_info.save()
     return redirect('webservice:show_result', task_info_id=task_info.id)
 
@@ -113,7 +114,7 @@ def model(request, model_id):
         return HttpResponse("Модель не найдена")  # TODO: throw 404
     task = wolfram_tasks[model_id]
     if request.method == 'POST':
-        return get_result(request)
+        return get_result(request, model_id)
     else:
         show_hint = False
         if request.GET & TaskForm.base_fields.keys():

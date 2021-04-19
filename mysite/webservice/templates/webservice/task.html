@@ -13,7 +13,7 @@
                 </p>
             {% endif %}
     </div>
-    <form action="{% url 'webservice:answer' %}" method="post">
+    <form action="{% url 'webservice:answer' model_id=model_id %}" method="post">
         {% csrf_token %}
         <ul class="parameters">
         {% for field in form %}

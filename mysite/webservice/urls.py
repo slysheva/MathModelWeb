@@ -6,7 +6,7 @@ from . import views
 app_name = 'webservice'
 urlpatterns = [
     url(r'^main/$', views.main_page, name='main'),
-    url(r'^answer/$', views.get_result, name='answer'),
+    path(r'^answer/<model_id>/', views.get_result, name='answer'),
     path('model/<model_id>/', views.model, name='model'),
     url(r'^journal/$', views.get_journal, name='journal'),
     path('show_result/<uuid:task_info_id>/', views.show_result, name='show_result'),
