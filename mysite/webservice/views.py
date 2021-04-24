@@ -1,4 +1,6 @@
 import json
+import subprocess
+from subprocess import check_output
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -28,7 +30,10 @@ def get_result(request, model_id):
 
     current_model = wolfram_tasks[model_id]
 
-    output_params = current_model.run_model()  # TODO: try catch
+    out = check_output("wolframscript -script ./static/program.m", stderr=subprocess.STDOUT,
+                       stdin=subprocess.DEVNULL)
+
+    output_params = current_model.run_model()
 
     task_info.creation_date = datetime.now()
     task_info.output_data = json.dumps(output_params)
@@ -106,13 +111,13 @@ def model(request, model_id):
         return get_result(request, model_id)
     else:
         show_hint = False
-        if request.GET & TaskForm.base_fields.keys():
-            form = TaskForm(request.GET)
+        if request.GET & TaskForm(task).fields.keys():
+            form = TaskForm(task, request.GET)
         else:
             initial_values = {}
             for arg in task.args_dict.values():
                 initial_values[arg.json_name] = arg.value
-            form = TaskForm(initial=initial_values)
+            form = TaskForm(task, initial=initial_values)
             show_hint = True
 
     return render(request, 'webservice/task.html', {

@@ -6,11 +6,11 @@ import csv
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
-from subprocess import check_output
 
 import matplotlib.pyplot as plt
 
 from .constants import METR2CM, GRAMPERMOL, URL_PREFIX
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class TaskResult(models.Model):
@@ -104,9 +104,8 @@ class WolframTask:
             x_axis, y_axis, z_axis = result_data[plot.name]
             self.draw_plot(plot, x_axis, y_axis, z_axis)
 
+    # обработка данных после запуска вольфрам скрипта
     def run_model(self):
-        out = check_output("wolframscript -script ./static/program.m", stderr=subprocess.STDOUT,
-                           stdin=subprocess.DEVNULL)
 
         output_params = {}
 
