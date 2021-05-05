@@ -30,7 +30,7 @@ def get_result(request, model_id):
 
     current_model = wolfram_tasks[model_id]
 
-    out = check_output("wolframscript -script ./static/program.m", stderr=subprocess.STDOUT,
+    out = check_output("wolframscript -script {}".format(current_model.source_file), stderr=subprocess.STDOUT,
                        stdin=subprocess.DEVNULL)
 
     output_params = current_model.run_model()
