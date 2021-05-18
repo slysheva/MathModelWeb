@@ -1,5 +1,4 @@
 (* ::Package:: *)
-
 (* ::Input:: *)
 rhos:=920;
 Cps:=2010;
@@ -25,19 +24,6 @@ h0= getArg[args, "h0", h0];
 h[tt_]:=Sqrt[h0^2+2*ks/(rhos*L)*NIntegrate[Th-Tb[t],{t,0,tt}]];
 (*{Plot[h[t],{t,0,11000},PlotLegends->{"h[t]"}],Plot[Tb[t],{t,0,11000},PlotLegends->{"Tb[t]"}]}*)
 
-
 (* ::Input::Initialization:: *)
 Export["h.csv", Table[h[t],{t, 0, 11000}], "CSV"];
 Export["Tb.csv", Table[Tb[t],{t, 0, 11000}], "CSV"];
-
-
-(* ::Input:: *)
-(**)
-
-
-(* ::Input:: *)
-(**)
-
-
-(* ::Input:: *)
-(**)

@@ -156,16 +156,16 @@ class ModelProcess(WolframSolver):
 
         for plot in self.plots_list:
             x_axis, y_axis, z_axis = self.get_points(f".{URL_PREFIX + plot.data_url}")
-            output_params[plot.name] = x_axis
+            output_params[plot.name] = x_axis, y_axis, z_axis
 
         return output_params
 
 
 class StefanProblem(WolframSolver):
     id = "stefan_problem"
-    tittle = "Проблема Стефана"
-    description = "Модель, зешаюзая проблему Стефана"
-    default_description = "Параметры по умолчанию — сплав TiAl"
+    tittle = "Задача Стефана"
+    description = "Модель, решающая задачу Стефана"
+    default_description = "Параметры по умолчанию — раствор NaNO3 + H2O"
     args_dict = {
         "ks": ArgModel("ks", 2.219, "k<sub>s</sub>"),
         "rhos": ArgModel("rhos", 920 / METR2CM, "ρ<sub>s</sub>"),
@@ -175,13 +175,13 @@ class StefanProblem(WolframSolver):
         "h0": ArgModel("h0", 0.001, "h<sub>0</sub>"),
     }
     source_file = "./static/Stefan_problem.m"
-    input_file = "./webservice/static/args.json"
+    input_file = "./webservice/static/args_s.json"
     plots_list = [
-        PlotModel('h0', '/static/h0.png', 'Описание h0',
-                  'Описание h0',
+        PlotModel('h0', '/static/h0.png', 'h(t) - межфазная граница, движущаяся со временем',
+                  'h(t)',
                   '/static/h.csv'),
-        PlotModel('epsilon', '/static/epsilon.png', 'Описание Tb',
-                  'Кусочно-заданная фунуция T(b)',
+        PlotModel('Tb', '/static/Tb.png', 'Tb - функция температуры на границе твердая фаза/внешняя среда',
+                  'Кусочно-заданная фунуция Tb(t)',
                   '/static/Tb.csv'),
     ]
 
